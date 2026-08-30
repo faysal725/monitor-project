@@ -31,7 +31,26 @@ export function useMonitors() {
     return created;
   };
 
-  return { monitors, loading, error, addMonitor };
+  const updateMonitor = async (id, updates) => {
+    const res = await fetch(`${API_URL}/api/monitors/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) throw new Error("Failed to update monitor");
+    const updated = await res.json();
+    setMonitors((prev) => prev.map((m) => (m.id === id ? updated : m)));
+    return updated;
+  };
+
+  const deleteMonitor = async (id) => {
+    const res = await fetch(`${API_URL}/api/monitors/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error("Failed to delete monitor");
+    setMonitors((prev) => prev.filter((m) => m.id !== id));
+  };
+
+
+  return { monitors, loading, error, addMonitor, updateMonitor, deleteMonitor };
 }
 
 export function useMonitor(id) {

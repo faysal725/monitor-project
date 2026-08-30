@@ -6,7 +6,7 @@ import StatsBar from "@/components/StatsBar";
 import AddMonitorDialog from "@/components/AddMonitorDialog";
 
 export default function DashboardPage() {
-  const { monitors, addMonitor } = useMonitors();
+  const { monitors, addMonitor, updateMonitor, deleteMonitor } = useMonitors();
 
   return (
     <main className="p-6 max-w-6xl mx-auto">
@@ -19,7 +19,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {monitors.map((m) => (
-          <MonitorCard key={m.id} monitor={m} />
+          <MonitorCard key={m.id} monitor={m} onUpdate={updateMonitor} onDelete={deleteMonitor} />
         ))}
       </div>
     </main>
