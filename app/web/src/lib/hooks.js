@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { io } from "socket.io-client";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -17,6 +18,16 @@ export function useMonitors() {
       .then((data) => setMonitors(data))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
+
+    const socket = io(API_URL);
+
+    socket.on("monitor_updated", (updatedMonitor) => {
+      setMonitors((prev) =>
+        prev.map((m) => (m.id === updatedMonitor.id ? updatedMonitor : m))
+      );
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   const addMonitor = async (newMonitorInput) => {
@@ -48,7 +59,6 @@ export function useMonitors() {
     if (!res.ok) throw new Error("Failed to delete monitor");
     setMonitors((prev) => prev.filter((m) => m.id !== id));
   };
-
 
   return { monitors, loading, error, addMonitor, updateMonitor, deleteMonitor };
 }

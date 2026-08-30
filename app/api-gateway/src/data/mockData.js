@@ -3,57 +3,57 @@
 let monitors = [
   {
     id: "mon_1",
-    url: "https://api.example.com/v1/users",
+    url: "https://jsonplaceholder.typicode.com/posts/1",
     method: "GET",
     intervalSeconds: 30,
     status: "up",
     uptimePercent: 99.9,
-    pingLogs: genPingLogs(20, 80, 0.05, 0),
+    pingLogs: []
   },
   {
     id: "mon_2",
-    url: "https://api.example.com/v1/payments",
+    url: "https://jsonplaceholder.typicode.com/posts/2",
     method: "POST",
     intervalSeconds: 60,
     status: "degraded",
     uptimePercent: 97.2,
-    pingLogs: genPingLogs(20, 250, 0.3, 0.05),
+    pingLogs: []
   },
   {
     id: "mon_3",
-    url: "https://api.example.com/v1/webhooks/incoming",
+    url: "https://jsonplaceholder.typicode.com/posts/3",
     method: "POST",
     intervalSeconds: 30,
     status: "down",
     uptimePercent: 82.5,
-    pingLogs: genPingLogs(20, 100, 0.1, 0.4),
+    pingLogs: []
   },
   {
     id: "mon_4",
-    url: "https://api.example.com/v1/auth/token",
+    url: "https://jsonplaceholder.typicode.com/posts/4",
     method: "POST",
     intervalSeconds: 300,
     status: "up",
     uptimePercent: 99.98,
-    pingLogs: genPingLogs(20, 60, 0.02, 0),
+    pingLogs: []
   },
   {
     id: "mon_5",
-    url: "https://api.example.com/v1/inventory",
+    url: "https://jsonplaceholder.typicode.com/posts/5",
     method: "GET",
     intervalSeconds: 60,
     status: "up",
     uptimePercent: 99.5,
-    pingLogs: genPingLogs(20, 120, 0.08, 0),
+    pingLogs: []
   },
   {
     id: "mon_6",
-    url: "https://api.example.com/v1/notifications/send",
+    url: "https://jsonplaceholder.typicode.com/posts/6",
     method: "POST",
     intervalSeconds: 30,
     status: "degraded",
     uptimePercent: 94.1,
-    pingLogs: genPingLogs(20, 180, 0.35, 0.1),
+    pingLogs: []
   },
 ];
 

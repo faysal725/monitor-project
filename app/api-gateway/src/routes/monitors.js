@@ -1,20 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const { monitors, genPingLogs } = require("../data/mockData");
+const { startMonitorPing, stopMonitorPing } = require("../services/pinger");
 
-// GET /api/monitors
 router.get("/", (req, res) => {
   res.json(monitors);
 });
 
-// GET /api/monitors/:id
 router.get("/:id", (req, res) => {
   const monitor = monitors.find((m) => m.id === req.params.id);
   if (!monitor) return res.status(404).json({ error: "Monitor not found" });
   res.json(monitor);
 });
 
-// POST /api/monitors
 router.post("/", (req, res) => {
   const { url, method, intervalSeconds } = req.body;
 
@@ -29,27 +27,35 @@ router.post("/", (req, res) => {
     intervalSeconds,
     status: "up",
     uptimePercent: 100,
-    pingLogs: genPingLogs(20, 100, 0.05, 0),
+    pingLogs: [],
   };
 
   monitors.push(newMonitor);
+
+  const io = req.app.get("io");
+  startMonitorPing(newMonitor, io);
+
   res.status(201).json(newMonitor);
 });
 
-// PATCH /api/monitors/:id
 router.patch("/:id", (req, res) => {
   const monitor = monitors.find((m) => m.id === req.params.id);
   if (!monitor) return res.status(404).json({ error: "Monitor not found" });
 
   Object.assign(monitor, req.body);
+
+  // If interval or URL changed, restart the ping loop with new settings
+  const io = req.app.get("io");
+  startMonitorPing(monitor, io);
+
   res.json(monitor);
 });
 
-// DELETE /api/monitors/:id
 router.delete("/:id", (req, res) => {
   const index = monitors.findIndex((m) => m.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: "Monitor not found" });
 
+  stopMonitorPing(req.params.id);
   const [deleted] = monitors.splice(index, 1);
   res.json(deleted);
 });
