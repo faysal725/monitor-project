@@ -6,12 +6,12 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, RefreshCw, ShieldCheck, ShieldX } from "lucide-react";
 import AnomalyBadge from "./AnomalyBadge";
 import AIDiagnostic from "./AIDiagnostic";
-import { useAIAnalysis } from "@/lib/hooks";
+import { useAnalysisForMonitor } from "@/lib/hooks";
 
 export default function WebhookFeedItem({ event }) {
   const [open, setOpen] = useState(false);
   const [showAI, setShowAI] = useState(false);
-  const analysis = useAIAnalysis(event.id);
+  const analysis = useAnalysisForMonitor(event.id);
 
   const handleReplay = (e) => {
     e.stopPropagation();

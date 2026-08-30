@@ -3,13 +3,17 @@ import { useMonitors } from "@/lib/hooks";
 import { globalStats } from "@/lib/mockData";
 import MonitorCard from "@/components/MonitorCard";
 import StatsBar from "@/components/StatsBar";
+import AddMonitorDialog from "@/components/AddMonitorDialog";
 
 export default function DashboardPage() {
-  const { monitors } = useMonitors();
+  const { monitors, addMonitor } = useMonitors();
 
   return (
     <main className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-slate-100 mb-6">Monitored Endpoints</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-slate-100">Monitored Endpoints</h1>
+        <AddMonitorDialog onAdd={addMonitor} />
+      </div>
 
       <StatsBar monitors={monitors} totalWebhooksCaptured={globalStats.totalWebhooksCaptured} />
 
