@@ -104,6 +104,13 @@ export function useWebhookEvents() {
       .then((res) => res.json())
       .then((data) => setEvents(data))
       .finally(() => setLoading(false));
+
+    const socket = io(API_URL);
+    socket.on("new_webhook", (newEvent) => {
+      setEvents((prev) => [newEvent, ...prev].slice(0, 50));
+    });
+
+    return () => socket.disconnect();
   }, []);
 
   return { events, loading };

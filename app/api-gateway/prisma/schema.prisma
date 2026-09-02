@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Monitor {
+  id              String    @id @default(cuid())
+  url             String
+  method          String
+  intervalSeconds Int
+  status          String    @default("up")
+  uptimePercent   Float     @default(100)
+  createdAt       DateTime  @default(now())
+  pingLogs        PingLog[]
+}
+
+model PingLog {
+  id         String   @id @default(cuid())
+  monitorId  String
+  monitor    Monitor  @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  timestamp  DateTime @default(now())
+  latencyMs  Int
+  statusCode Int
+}
+
+model WebhookEvent {
+  id             String   @id @default(cuid())
+  monitorSlug    String
+  method         String
+  headers        Json
+  body           Json
+  signatureValid Boolean
+  receivedAt     DateTime @default(now())
+  anomalyFlags   String[]
+}
+
+model AIAnalysis {
+  id             String   @id @default(cuid())
+  relatedEventId String?
+  summary        String
+  probableCause  String
+  steps          String[]
+  codeFix        String?
+}
