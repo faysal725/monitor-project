@@ -11,7 +11,7 @@ import {
 import { Sparkles, Pencil, Trash2, Check, X } from "lucide-react";
 import LatencyChart from "./LatencyChart";
 import AIDiagnosticDrawer from "./AIDiagnosticDrawer";
-import { useAnalysisForMonitor, useMonitors } from "@/lib/hooks";
+import { fetchAnalysisForMonitor, useMonitors } from "@/lib/hooks";
 import { toast } from "sonner";
 
 const statusStyles = {
@@ -27,7 +27,8 @@ export default function MonitorCard({ monitor, onUpdate, onDelete }) {
   const [intervalDraft, setIntervalDraft] = useState(monitor.intervalSeconds);
   const [saving, setSaving] = useState(false);
 
-  const analysis = useAnalysisForMonitor(monitor.id);
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
   const styles = statusStyles[monitor.status];
   const lastLatency = monitor.pingLogs[monitor.pingLogs.length - 1]?.latencyMs ?? 0;
   const needsDiagnostic = monitor.status === "degraded" || monitor.status === "down";
@@ -145,9 +146,26 @@ export default function MonitorCard({ monitor, onUpdate, onDelete }) {
             Latency: <span className="text-slate-300 font-medium">{lastLatency}ms</span>
           </span>
           {needsDiagnostic && (
-            <Button size="sm" variant="secondary" className="h-7 text-xs gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200" onClick={() => setDrawerOpen(true)}>
+            <Button
+              size="sm"
+              variant="secondary"
+              className="h-7 text-xs gap-1 bg-slate-800 hover:bg-slate-700 text-slate-200"
+              onClick={async () => {
+                setAnalysisLoading(true);
+                try {
+                  const data = await fetchAnalysisForMonitor(monitor.id);
+                  setAnalysis(data);
+                  setDrawerOpen(true);
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setAnalysisLoading(false);
+                }
+              }}
+              disabled={analysisLoading}
+            >
               <Sparkles className="h-3 w-3" />
-              Run AI Diagnostic
+              {analysisLoading ? "Analyzing..." : "Run AI Diagnostic"}
             </Button>
           )}
         </div>

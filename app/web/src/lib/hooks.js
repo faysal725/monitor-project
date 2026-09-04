@@ -78,19 +78,10 @@ export function useMonitor(id) {
   return { monitor, loading };
 }
 
-export function useAnalysisForMonitor(monitorId) {
-  const [analysis, setAnalysis] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!monitorId) return;
-    fetch(`${API_URL}/api/diagnostics/${monitorId}`)
-      .then((res) => res.json())
-      .then((data) => setAnalysis(data))
-      .finally(() => setLoading(false));
-  }, [monitorId]);
-
-  return analysis;
+export async function fetchAnalysisForMonitor(monitorId) {
+  const res = await fetch(`${API_URL}/api/diagnostics/${monitorId}`);
+  if (!res.ok) throw new Error("Failed to fetch analysis");
+  return res.json();
 }
 
 // No more setInterval fake-live simulation — fetch once on load.

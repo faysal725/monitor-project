@@ -6,12 +6,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { ChevronDown, RefreshCw, ShieldCheck, ShieldX } from "lucide-react";
 import AnomalyBadge from "./AnomalyBadge";
 import AIDiagnostic from "./AIDiagnostic";
-import { useAnalysisForMonitor } from "@/lib/hooks";
+import { fetchAnalysisForMonitor } from "@/lib/hooks";
 
 export default function WebhookFeedItem({ event }) {
   const [open, setOpen] = useState(false);
   const [showAI, setShowAI] = useState(false);
-  const analysis = useAnalysisForMonitor(event.id);
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
 
   const handleReplay = (e) => {
     e.stopPropagation();
@@ -52,11 +53,26 @@ export default function WebhookFeedItem({ event }) {
           <Button size="sm" variant="outline" onClick={handleReplay}>
             <RefreshCw className="h-3 w-3 mr-1" /> Replay
           </Button>
-          {analysis && (
-            <Button size="sm" variant="secondary" onClick={(e) => { e.stopPropagation(); setShowAI(true); }}>
-              View AI Diagnosis
-            </Button>
-          )}
+          <Button
+            size="sm"
+            variant="secondary"
+            disabled={analysisLoading}
+            onClick={async (e) => {
+              e.stopPropagation();
+              setAnalysisLoading(true);
+              try {
+                const data = await fetchAnalysisForMonitor(event.monitorSlug);
+                setAnalysis(data);
+                setShowAI(true);
+              } catch (err) {
+                console.error(err);
+              } finally {
+                setAnalysisLoading(false);
+              }
+            }}
+          >
+            {analysisLoading ? "Analyzing..." : "View AI Diagnosis"}
+          </Button>
         </div>
       </CollapsibleContent>
 

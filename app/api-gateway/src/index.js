@@ -9,7 +9,6 @@ const webhooksRouter = require("./routes/webhooks");
 const diagnosticsRouter = require("./routes/diagnostics");
 const statsRouter = require("./routes/stats");
 const errorHandler = require("./middleware/errorHandler");
-const { monitors } = require("./data/mockData");
 const { startAllMonitors } = require("./services/pinger");
 
 const app = express();
@@ -46,5 +45,5 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, () => {
   console.log(`API gateway running on http://localhost:${PORT}`);
-  startAllMonitors(monitors, io); // begin pinging all existing monitors on boot
+  startAllMonitors(io); // begin pinging all existing monitors on boot
 });
