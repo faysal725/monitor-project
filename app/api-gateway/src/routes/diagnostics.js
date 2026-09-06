@@ -6,16 +6,11 @@ const AI_SERVICE_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
 
 router.get("/:monitorId", async (req, res) => {
   const { monitorId } = req.params;
-  console.log("Looking up monitorId:", JSON.stringify(monitorId));
-
-  const allIds = await prisma.monitor.findMany({ select: { id: true } });
-  console.log("All monitor IDs Prisma can see:", allIds);
 
   const monitor = await prisma.monitor.findUnique({
     where: { id: monitorId },
+    include: { pingLogs: { orderBy: { timestamp: "desc" }, take: 1 } },
   });
-  console.log("Bare findUnique result:", monitor);
-  console.log("Monitor found:", monitor ? monitor.id : "NULL");
 
   const relatedEvent = await prisma.webhookEvent.findFirst({
     where: { monitorSlug: monitorId },
@@ -25,22 +20,20 @@ router.get("/:monitorId", async (req, res) => {
   const payload = {
     monitor: monitor
       ? {
-        url: monitor.url,
-        status: monitor.status,
-        statusCode: monitor.pingLogs[0]?.statusCode ?? null,
-        latencyMs: monitor.pingLogs[0]?.latencyMs ?? null,
-      }
+          url: monitor.url,
+          status: monitor.status,
+          statusCode: monitor.pingLogs[0]?.statusCode ?? null,
+          latencyMs: monitor.pingLogs[0]?.latencyMs ?? null,
+        }
       : null,
     webhookEvent: relatedEvent
       ? {
-        signatureValid: relatedEvent.signatureValid,
-        anomalyFlags: relatedEvent.anomalyFlags,
-        body: relatedEvent.body,
-      }
+          signatureValid: relatedEvent.signatureValid,
+          anomalyFlags: relatedEvent.anomalyFlags,
+          body: relatedEvent.body,
+        }
       : null,
   };
-
-  console.log("Payload sent to AI service:", JSON.stringify(payload, null, 2));
 
   try {
     const aiRes = await fetch(`${AI_SERVICE_URL}/analyze`, {
