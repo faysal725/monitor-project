@@ -20,18 +20,18 @@ router.get("/:monitorId", async (req, res) => {
   const payload = {
     monitor: monitor
       ? {
-          url: monitor.url,
-          status: monitor.status,
-          statusCode: monitor.pingLogs[0]?.statusCode ?? null,
-          latencyMs: monitor.pingLogs[0]?.latencyMs ?? null,
-        }
+        url: monitor.url,
+        status: monitor.status,
+        statusCode: monitor.pingLogs[0]?.statusCode ?? null,
+        latencyMs: monitor.pingLogs[0]?.latencyMs ?? null,
+      }
       : null,
     webhookEvent: relatedEvent
       ? {
-          signatureValid: relatedEvent.signatureValid,
-          anomalyFlags: relatedEvent.anomalyFlags,
-          body: relatedEvent.body,
-        }
+        signatureValid: relatedEvent.signatureValid,
+        anomalyFlags: relatedEvent.anomalyFlags,
+        body: relatedEvent.body,
+      }
       : null,
   };
 
@@ -42,7 +42,10 @@ router.get("/:monitorId", async (req, res) => {
       body: JSON.stringify(payload),
     });
 
-    if (!aiRes.ok) throw new Error("AI service returned an error");
+    if (!aiRes.ok) {
+      const errText = await aiRes.text();
+      throw new Error(`AI service returned ${aiRes.status}: ${errText}`);
+    }
 
     const analysis = await aiRes.json();
     return res.json(analysis);
