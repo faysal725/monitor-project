@@ -8,6 +8,7 @@ const monitorsRouter = require("./routes/monitors");
 const webhooksRouter = require("./routes/webhooks");
 const diagnosticsRouter = require("./routes/diagnostics");
 const statsRouter = require("./routes/stats");
+const warmupRouter = require("./routes/warmup");
 const errorHandler = require("./middleware/errorHandler");
 const { startAllMonitors } = require("./services/pinger");
 
@@ -27,6 +28,7 @@ app.use("/api/monitors", monitorsRouter);
 app.use("/api/webhooks", webhooksRouter);
 app.use("/api/diagnostics", diagnosticsRouter);
 app.use("/api/stats", statsRouter);
+app.use("/api/warmup", warmupRouter);
 
 app.use(errorHandler);
 
