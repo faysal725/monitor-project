@@ -13,6 +13,8 @@ import LatencyChart from "./LatencyChart";
 import AIDiagnosticDrawer from "./AIDiagnosticDrawer";
 import { fetchAnalysisForMonitor, useMonitors } from "@/lib/hooks";
 import { toast } from "sonner";
+import { useAIServiceStatus } from "@/lib/aiServiceContext";
+
 
 const statusStyles = {
   up: { badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30", dot: "bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.5)]" },
@@ -32,6 +34,9 @@ export default function MonitorCard({ monitor, onUpdate, onDelete }) {
   const styles = statusStyles[monitor.status];
   const lastLatency = monitor.pingLogs[monitor.pingLogs.length - 1]?.latencyMs ?? 0;
   const needsDiagnostic = monitor.status === "degraded" || monitor.status === "down";
+
+  const { status: aiStatus } = useAIServiceStatus();
+  const aiRestarting = aiStatus === "checking";
 
   const handleSave = async () => {
     setSaving(true);
@@ -162,10 +167,10 @@ export default function MonitorCard({ monitor, onUpdate, onDelete }) {
                   setAnalysisLoading(false);
                 }
               }}
-              disabled={analysisLoading}
+              disabled={analysisLoading || aiRestarting}
             >
               <Sparkles className="h-3 w-3" />
-              {analysisLoading ? "Analyzing..." : "Run AI Diagnostic"}
+              {aiRestarting ? "AI server restarting..." : analysisLoading ? "Analyzing..." : "Run AI Diagnostic"}
             </Button>
           )}
         </div>

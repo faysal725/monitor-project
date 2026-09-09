@@ -7,11 +7,14 @@ import { ChevronDown, RefreshCw, ShieldCheck, ShieldX } from "lucide-react";
 import AnomalyBadge from "./AnomalyBadge";
 import AIDiagnostic from "./AIDiagnostic";
 import { fetchAnalysisForMonitor } from "@/lib/hooks";
+import { useAIServiceStatus } from "@/lib/aiServiceContext";
 
 export default function WebhookFeedItem({ event }) {
   const [open, setOpen] = useState(false);
   const [showAI, setShowAI] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const { status: aiStatus } = useAIServiceStatus();
+  const aiRestarting = aiStatus === "checking";
   const [analysisLoading, setAnalysisLoading] = useState(false);
 
   const handleReplay = (e) => {
@@ -56,7 +59,7 @@ export default function WebhookFeedItem({ event }) {
           <Button
             size="sm"
             variant="secondary"
-            disabled={analysisLoading}
+            disabled={analysisLoading || aiRestarting}
             onClick={async (e) => {
               e.stopPropagation();
               setAnalysisLoading(true);
@@ -71,7 +74,7 @@ export default function WebhookFeedItem({ event }) {
               }
             }}
           >
-            {analysisLoading ? "Analyzing..." : "View AI Diagnosis"}
+            {aiRestarting ? "AI server restarting..." : analysisLoading ? "Analyzing..." : "View AI Diagnosis"}
           </Button>
         </div>
       </CollapsibleContent>
