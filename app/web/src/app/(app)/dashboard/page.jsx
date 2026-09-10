@@ -4,9 +4,10 @@ import { globalStats } from "@/lib/mockData";
 import MonitorCard from "@/components/MonitorCard";
 import StatsBar from "@/components/StatsBar";
 import AddMonitorDialog from "@/components/AddMonitorDialog";
+import MonitorCardSkeleton from "@/components/MonitorCardSkeleton";
 
 export default function DashboardPage() {
-  const { monitors, addMonitor, updateMonitor, deleteMonitor } = useMonitors();
+  const { monitors, loading, addMonitor, updateMonitor, deleteMonitor } = useMonitors();
 
   return (
     <main className="p-6 max-w-6xl mx-auto">
@@ -18,9 +19,11 @@ export default function DashboardPage() {
       <StatsBar monitors={monitors} totalWebhooksCaptured={globalStats.totalWebhooksCaptured} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {monitors.map((m) => (
-          <MonitorCard key={m.id} monitor={m} onUpdate={updateMonitor} onDelete={deleteMonitor} />
-        ))}
+        {loading
+          ? Array.from({ length: 6 }).map((_, i) => <MonitorCardSkeleton key={i} />)
+          : monitors.map((m) => (
+            <MonitorCard key={m.id} monitor={m} onUpdate={updateMonitor} onDelete={deleteMonitor} />
+          ))}
       </div>
     </main>
   );
