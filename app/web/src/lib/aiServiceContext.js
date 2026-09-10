@@ -17,7 +17,7 @@ export function AIServiceProvider({ children }) {
 
     const poll = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/warmup`);
+        const res = await fetch(`${API_URL}/api/warmup`, { cache: "no-store" });
         const data = await res.json();
 
         if (cancelled) return;
