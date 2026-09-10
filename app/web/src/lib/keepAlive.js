@@ -14,6 +14,7 @@ export function useKeepAlive() {
       }
     };
 
+    ping(); // fire immediately on mount, don't wait for the first interval tick
     const intervalId = setInterval(ping, PING_INTERVAL_MS);
     return () => clearInterval(intervalId);
   }, []);
